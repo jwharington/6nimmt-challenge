@@ -1,0 +1,18 @@
+
+Measures to track
+- how many slots free in each row
+- how many players in game
+- cards that have been played
+- how many cards remaining
+
+Playing strategies
+- choose a safe card to play (no chance of losing round)
+- choose a card that has some risk depending on other players
+- anticipating a row will be emptied by someone else
+- get rid of high cards early
+- get rid of low cards early
+- play a low card forcing taking a row, to minimise cost
+
+Miscellaneous
+- ranking strategies (relative value of options)
+
