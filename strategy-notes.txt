@@ -1,4 +1,6 @@
 
+change
+
 Measures to track
 - how many slots free in each row
 - how many players in game
