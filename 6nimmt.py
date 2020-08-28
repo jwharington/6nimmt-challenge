@@ -6,6 +6,7 @@
 import sys
 
 blah;
+oh noes
 
 def echo(message):
     sys.stderr.write(message)
