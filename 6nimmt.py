@@ -36,3 +36,7 @@ while running:
 
 # to kill hanged (mid-game) server:
 # echo -e "control\n\nstop\n\n" | socat ...
+
+running = 0
+# this doesn't do anything
+
