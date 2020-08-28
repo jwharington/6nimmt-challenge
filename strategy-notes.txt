@@ -7,13 +7,18 @@ Measures to track
 - cards that have been played
 - how many cards remaining
 
-Playing strategies
+Playing strategies (potential)
+- completely random
 - choose a safe card to play (no chance of losing round)
 - choose a card that has some risk depending on other players
 - anticipating a row will be emptied by someone else
 - get rid of high cards early
 - get rid of low cards early
 - play a low card forcing taking a row, to minimise cost
+- when selecting a row, choose low cost
+- when selecting a row, choose something to hurt others
+- choose emptiest stack
+- raise a stack as much as possible
 
 Miscellaneous
 - ranking strategies (relative value of options)
