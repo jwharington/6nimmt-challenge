@@ -16,3 +16,4 @@ Playing strategies
 Miscellaneous
 - ranking strategies (relative value of options)
 
+Sam was here
