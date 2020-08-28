@@ -5,6 +5,8 @@
 
 import sys
 
+blah;
+
 def echo(message):
     sys.stderr.write(message)
     sys.stderr.flush()
