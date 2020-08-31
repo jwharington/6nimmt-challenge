@@ -1,0 +1,69 @@
+# ===========================================================================
+#
+#                        6 NIMMT CODING CHALLANGE
+#
+# ===========================================================================
+# Written by: John Wharington & Samuel Smith
+# Date Created: 28 AUGUST 2020
+#
+# Description: Communicate with web server to plat 6 Nimmt.
+#
+# ===========================================================================
+
+import socket
+import sys
+
+# Web server details
+hostname = 'ipsm.makarta.com'
+port = 9999
+
+# Create socket to communicate with server
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print('Socket successfully created')
+except socket.error as err:
+    print(f'Socket creation failed with error {err}')
+
+# Get web server IP address
+try:
+    host_ip = socket.gethostbyname(hostname)
+except socket.gaierror:
+    print('There was an error resolving the host!')
+    sys.exit()
+
+# Establish connection with web server    
+s.connect((host_ip,port))
+print(f'Successfully connected to host {hostname}\nIP: {host_ip} Port: {port}')
+
+# Send message and wait for reply
+try:    
+    z = 'player\nSam\n\n'
+    s.sendall(z.encode())
+        
+    amount_recieved = 0
+    amount_expected = 7    
+    
+    while amount_recieved < amount_expected: # Not sure how to listen and record response from server?
+        data = s.recv(16)
+        amount_recieved += len(data)
+        print(f'recieved {data}')
+    
+finally:
+    print('Closing socket')
+    s.close()    
+
+# full_msg = ''
+# while True:
+#     msg = s.recv(1024)
+#     if len(msg) <= 0:
+#         break
+#     full_msg += msg.decode('utf-8')
+
+# print(full_msg)
+
+# s.close
+
+
+    
+    
+    
