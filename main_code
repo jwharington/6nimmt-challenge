@@ -43,7 +43,7 @@ running = 1
 
 # list of current players, score info
 players = []
-scores = []
+scores = {}
 stacks_topcard = []
 stacks_n = []
 stacks_points = []
@@ -132,11 +132,16 @@ def on_stacks(matchobj):
 def on_scores(matchobj):
     global scores
     # loads players into array and checks start condition
-    # players are separated by new lines
-    scores_text = re.split("\n", matchobj.group(1))
-    print('scores: ', scores_text)
-    # TODO lookup player name etc from scores text to populate scores array
-    # (but this is low priority because who cares?)
+    #
+    # players are separated by spaces, "name1 value1 name2 value2 ... "
+    scores_text = re.split('(.+? \d+) ', matchobj.group(1))
+    for sc in scores_text:
+        # separate name from value
+        m = re.split(' ', sc)
+        if (len(m)==2):
+            # set value for name
+            scores[m[0]] = int(m[1])
+    print('scores: ', scores)
     if (len(cards)==0):
         finish_game()
 
@@ -149,10 +154,10 @@ def on_stack(matchobj):
     send(m)
 
 def on_played(matchobj):
-    print("on_played TODO")
+    print(f"on_played TODO {matchobj.group(1)}")
 
 def on_info(matchobj):
-    print("info {matchobj.group(1)}")
+    print(f"info TODO {matchobj.group(1)}")
 
 def on_server_message(matchobj):
     m =  matchobj.group(0)
