@@ -12,6 +12,7 @@
 
 import socket
 import sys
+import re
 
 # Web server details
 hostname = 'ipsm.makarta.com'
@@ -31,69 +32,39 @@ except socket.gaierror:
     print('There was an error resolving the host!')
     sys.exit()
 
-# Establish connection with web server    
+# Establish connection with web server
 s.connect((host_ip,port))
 print(f'Successfully connected to host {hostname}\nIP: {host_ip} Port: {port}')
 
 players = []
 
-def load_players(buffer):
-  print('players found: [')
-  j = buffer.find('\n')
-  while (j != -1):
-    # name is everything up until the newline
-    this_player = buffer[0:j]
-    players.append(this_player)
-    print(f'{this_player}')
-    # advance buffer to next line
-    buffer = buffer[j:-1]
-    j = buffer.find('\n')
-  print(']')
+def load_players(matchobj):
+    players = re.split("\n", matchobj.group(1))
+    print('players: ', players)
 
-def process(buffer):
-    # look for end marker
-    while (buffer.find('\n\n') != -1):
-      j = buffer.find('\n\n')
-      # get a single chunk (start up until end marker)
-      this_chunk = buffer[0:j+2]
-      # advance buffer to next chunk (after end marker to end of buffer)
-      buffer = buffer[j+2:-1]
-      # process based on first characters 
-      if this_chunk[0:7] == "players":
-          # pass in text after players\n
-          load_players(this_chunk[8:-1])
-    # return whatever's left (could have had an incomplete chunk)
-    return buffer
+def process(matchobj):
+    m =  matchobj.group(0)
+    # parse each server response
+    re.sub("players\n(.*)\n\n",load_players, m, flags=re.DOTALL)
+    # ...
+    #
+    # eat the chunk
+    return ''
 
 # Send message and wait for reply
-try:    
+try:
     z = 'player\nSam\n\n'
     s.sendall(z.encode())
     running = 1
     buffer = ''
-        
     while running:
         data = s.recv(32)
         running = len(data.decode('utf-8'))>0
         buffer += data.decode('utf-8')
-        buffer = process(buffer)
-    
+        # split into chunks for processing
+        buffer = re.sub('.+\n\n',process, buffer, flags=re.DOTALL)
+
 finally:
     print('Closing socket')
-    s.close()    
+    s.close()
 
-# full_msg = ''
-# while True:
-#     msg = s.recv(1024)
-#     if len(msg) <= 0:
-#         break
-#     full_msg += msg.decode('utf-8')
-
-# print(full_msg)
-
-# s.close
-
-
-    
-    
-    
