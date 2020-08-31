@@ -14,6 +14,10 @@ import socket
 import sys
 import re
 
+##########################################################
+# Global variables
+##########################################################
+
 # Web server details
 hostname = 'ipsm.makarta.com'
 port = 9999
@@ -24,6 +28,9 @@ num_players = 1
 # whether to start the game when players have arrived
 do_start = 1
 
+# whether server is running, or we should exit
+running = 1
+
 # list of current players, score info
 players = []
 scores = []
@@ -32,8 +39,11 @@ stacks_n = []
 stacks_points = []
 
 ##########################################################
+# Utility functions
+##########################################################
 
 def send(buffer):
+    print("> ", buffer)
     s.sendall(buffer.encode())
 
 ##########################################################
@@ -52,6 +62,24 @@ def check_start():
     else:
         print("Waiting for more players")
 
+def select_card():
+    global cards
+    print('cards: ', cards)
+    # pretty dumb, choose highest card
+    c = cards[-1]
+    # remove it after playing
+    cards.remove(c)
+    return c
+
+def select_stack():
+    # really dumb, choose first stack always
+    return 1
+
+def finish_game():
+    global running
+    send("stop\n\n")
+    running = 0
+
 ##########################################################
 # Handlers for server events
 ##########################################################
@@ -62,11 +90,16 @@ def on_players(matchobj):
     # players are separated by new lines
     players = re.split("\n", matchobj.group(1))
     print('players: ', players)
+    # when player info has been given, we can check start
     check_start()
 
 def on_cards(matchobj):
     global cards
-    cards = re.split(" ", matchobj.group(1))
+    # line format: "card0 card1 .. cardn"
+    cards_strings = re.split(" ", matchobj.group(1))
+    # convert into integers
+    cards = []
+    cards = list(map(int, cards_strings))
     print('cards: ', cards)
 
 def on_stacks(matchobj):
@@ -77,11 +110,11 @@ def on_stacks(matchobj):
     # parse each line, appending to lists
     stack_lines = re.split("\n", matchobj.group(1))
     for stack_line in stack_lines:
-        # line format: n points topcard
+        # line format: "n points topcard"
         m = re.split(" ", stack_line)
-        stacks_n.append(m[0])
-        stacks_points.append(m[1])
-        stacks_topcard.append(m[2])
+        stacks_n.append(int(m[0]))
+        stacks_points.append(int(m[1]))
+        stacks_topcard.append(int(m[2]))
     print('stacks top card: ', stacks_topcard)
     print('stacks n: ', stacks_n)
     print('stacks points: ', stacks_points)
@@ -93,9 +126,23 @@ def on_scores(matchobj):
     scores_text = re.split("\n", matchobj.group(1))
     print('scores: ', scores_text)
     # TODO lookup player name etc from scores text to populate scores array
+    # (but this is low priority because who cares?)
+    if (len(cards)==0):
+        finish_game()
 
 def on_card(matchobj):
-    print("card TODO")
+    m = "card\n%d\n\n" % select_card()
+    send(m)
+
+def on_stack(matchobj):
+    m = "stack\n%d\n\n" % select_stack()
+    send(m)
+
+def on_played(matchobj):
+    print("on_played TODO")
+
+def on_info(matchobj):
+    print("info {matchobj.group(1)}")
 
 def on_server_message(matchobj):
     m =  matchobj.group(0)
@@ -105,7 +152,11 @@ def on_server_message(matchobj):
     m = re.sub("stacks\n(.*)\n\n", on_stacks, m, flags=re.DOTALL)
     m = re.sub("scores\n(.*)\n\n", on_scores, m, flags=re.DOTALL)
 
+    m = re.sub("info\n(.*)\n\n", on_info, m, flags=re.DOTALL)
+    m = re.sub("played\n(.*)\n\n", on_played, m, flags=re.DOTALL)
+
     m = re.sub("card\?\n\n", on_card, m, flags=re.DOTALL)
+    m = re.sub("stack\?\n(.*)\n\n", on_stack, m, flags=re.DOTALL)
     # ...
     #
     # eat whatever was left over
@@ -135,16 +186,18 @@ except socket.gaierror:
 s.connect((host_ip,port))
 print(f'Successfully connected to host {hostname}\nIP: {host_ip} Port: {port}')
 
-# Send message and wait for reply
 try:
+    # Send message and wait for reply
     send('player\nSam\n\n')
-    running = 1
     buffer = ''
     while running:
-        data = s.recv(32)
-        running = len(data.decode('utf-8'))>0
-        buffer += data.decode('utf-8')
+        # read and decode message from server
+        data = s.recv(32).decode('utf-8')
+        # append to parse buffer
+        buffer += data
         # split into chunks for processing (search for one or more characters up to double new line, non-greedy)
+        # if no match, buffer is returned unaffected
+        # if one or more match, this eats up the match returning what's left over
         buffer = re.sub('.+?\n\n', on_server_message, buffer, flags=re.DOTALL)
 
 finally:
