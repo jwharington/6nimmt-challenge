@@ -14,6 +14,10 @@ import socket
 import sys
 import re
 
+if (len(sys.argv) < 4):
+    print(f"Usage: {sys.argv[0]} Name num_players do_start")
+    exit();
+
 ##########################################################
 # Global variables
 ##########################################################
@@ -22,11 +26,17 @@ import re
 hostname = 'ipsm.makarta.com'
 port = 9999
 
+# my name
+name = sys.argv[1]
 # expected number of players before starting
-num_players = 1
+num_players = int(sys.argv[2])
 
 # whether to start the game when players have arrived
-do_start = 1
+do_start = int(sys.argv[3])
+
+# always start if only player
+if (num_players == 1):
+    do_start = 1
 
 # whether server is running, or we should exit
 running = 1
@@ -87,8 +97,8 @@ def finish_game():
 def on_players(matchobj):
     global players
     # loads players into array and checks start condition
-    # players are separated by new lines
-    players = re.split("\n", matchobj.group(1))
+    # players are separated by spaces
+    players = re.split(" ", matchobj.group(1))
     print('players: ', players)
     # when player info has been given, we can check start
     check_start()
@@ -188,7 +198,7 @@ print(f'Successfully connected to host {hostname}\nIP: {host_ip} Port: {port}')
 
 try:
     # Send message and wait for reply
-    send('player\nSam\n\n')
+    send(f'player\n{name}\n\n')
     buffer = ''
     while running:
         # read and decode message from server
