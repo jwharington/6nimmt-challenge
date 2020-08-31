@@ -13,6 +13,7 @@
 import socket
 import sys
 import re
+import random
 
 if (len(sys.argv) < 4):
     print(f"Usage: {sys.argv[0]} Name num_players do_start")
@@ -77,13 +78,15 @@ def select_card():
     print('cards: ', cards)
     # pretty dumb, choose highest card
     c = cards[-1]
+    # or choose completely random card
+    c = random.choice(cards)
     # remove it after playing
     cards.remove(c)
     return c
 
 def select_stack():
-    # really dumb, choose first stack always
-    return 1
+    # really dumb, choose random stack
+    return random.randint(1, 4)
 
 def finish_game():
     global running
