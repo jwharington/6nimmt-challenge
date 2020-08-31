@@ -55,7 +55,7 @@ stacks_points = []
 
 def send(buffer):
     print("> ", buffer)
-    s.sendall(buffer.encode())
+    s.sendall((buffer+"\n\n").encode())
 
 ##########################################################
 # Game logic
@@ -67,7 +67,7 @@ def check_start():
     if (len(players)== num_players):
         if (do_start):
             print("Starting the game")
-            send("start\n\n")
+            send("start")
         else:
             print("Waiting for game to start")
     else:
@@ -90,7 +90,7 @@ def select_stack():
 
 def finish_game():
     global running
-    send("stop\n\n")
+    send("stop")
     running = 0
 
 ##########################################################
@@ -149,11 +149,11 @@ def on_scores(matchobj):
         finish_game()
 
 def on_card(matchobj):
-    m = "card\n%d\n\n" % select_card()
+    m = "card\n%d" % select_card()
     send(m)
 
 def on_stack(matchobj):
-    m = "stack\n%d\n\n" % select_stack()
+    m = "stack\n%d" % select_stack()
     send(m)
 
 def on_played(matchobj):
@@ -207,7 +207,7 @@ print(f'Successfully connected to host {hostname}\nIP: {host_ip} Port: {port}')
 
 try:
     # Send message and wait for reply
-    send(f'player\n{name}\n\n')
+    send(f'player\n{name}')
     buffer = ''
     while running:
         # read and decode message from server
