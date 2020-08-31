@@ -35,18 +35,48 @@ except socket.gaierror:
 s.connect((host_ip,port))
 print(f'Successfully connected to host {hostname}\nIP: {host_ip} Port: {port}')
 
+players = []
+
+def load_players(buffer):
+  print('players found: [')
+  j = buffer.find('\n')
+  while (j != -1):
+    # name is everything up until the newline
+    this_player = buffer[0:j]
+    players.append(this_player)
+    print(f'{this_player}')
+    # advance buffer to next line
+    buffer = buffer[j:-1]
+    j = buffer.find('\n')
+  print(']')
+
+def process(buffer):
+    # look for end marker
+    while (buffer.find('\n\n') != -1):
+      j = buffer.find('\n\n')
+      # get a single chunk (start up until end marker)
+      this_chunk = buffer[0:j+2]
+      # advance buffer to next chunk (after end marker to end of buffer)
+      buffer = buffer[j+2:-1]
+      # process based on first characters 
+      if this_chunk[0:7] == "players":
+          # pass in text after players\n
+          load_players(this_chunk[8:-1])
+    # return whatever's left (could have had an incomplete chunk)
+    return buffer
+
 # Send message and wait for reply
 try:    
     z = 'player\nSam\n\n'
     s.sendall(z.encode())
+    running = 1
+    buffer = ''
         
-    amount_recieved = 0
-    amount_expected = 7    
-    
-    while amount_recieved < amount_expected: # Not sure how to listen and record response from server?
-        data = s.recv(16)
-        amount_recieved += len(data)
-        print(f'recieved {data}')
+    while running:
+        data = s.recv(32)
+        running = len(data.decode('utf-8'))>0
+        buffer += data.decode('utf-8')
+        buffer = process(buffer)
     
 finally:
     print('Closing socket')
