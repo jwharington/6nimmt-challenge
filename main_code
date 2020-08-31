@@ -174,9 +174,10 @@ def on_server_message(matchobj):
     m = re.sub("stack\?\n(.*)\n\n", on_stack, m, flags=re.DOTALL)
     # ...
     #
-    # eat whatever was left over
+    # handle unexpected messages gracefully
     if (len(m)):
         print(f"Unexpected input '{m}'")
+    # return blank, indicating this chunk is removed
     return ''
 
 ##########################################################
@@ -210,7 +211,8 @@ try:
         data = s.recv(32).decode('utf-8')
         # append to parse buffer
         buffer += data
-        # split into chunks for processing (search for one or more characters up to double new line, non-greedy)
+        # split into chunks for processing (search for one or more characters up to double new line, non-greedy),
+        # and call on_server_message on each chunk
         # if no match, buffer is returned unaffected
         # if one or more match, this eats up the match returning what's left over
         buffer = re.sub('.+?\n\n', on_server_message, buffer, flags=re.DOTALL)
