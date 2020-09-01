@@ -48,8 +48,11 @@ running = 1
 # list of current players, score info
 players = []
 scores = {}
+# value of card highest in each row
 stacks_topcard = []
+# number of cards played in each row
 stacks_n = []
+# total points in each row
 stacks_points = []
 
 ##########################################################
@@ -62,6 +65,9 @@ def send(buffer):
 
 ##########################################################
 # Game logic
+#
+# Notes:
+# -  assumes cards are sorted in increasing order
 ##########################################################
 
 def check_start():
