@@ -15,8 +15,8 @@ import sys
 import re
 import random
 
-if (len(sys.argv) < 5):
-    print(f"Usage: {sys.argv[0]} Name num_players do_start strategy")
+if (len(sys.argv) < 3):
+    print(f"Usage: {sys.argv[0]} Name strategy")
     exit();
 
 ##########################################################
@@ -29,18 +29,9 @@ port = 9999
 
 # my name
 name = sys.argv[1]
-# expected number of players before starting
-num_players = int(sys.argv[2])
-
-# whether to start the game when players have arrived
-do_start = int(sys.argv[3])
-
-# always start if only player
-if (num_players == 1):
-    do_start = 1
 
 # strategy switch
-strategy = int(sys.argv[4])
+strategy = int(sys.argv[2])
 
 # whether server is running, or we should exit
 running = 1
@@ -69,18 +60,6 @@ def send(buffer):
 # Notes:
 # -  assumes cards are sorted in increasing order
 ##########################################################
-
-def check_start():
-    # determines if enough players to start and triggering start
-    # global num_players, players
-    if (len(players)== num_players):
-        if (do_start):
-            print("Starting the game")
-            send("start")
-        else:
-            print("Waiting for game to start")
-    else:
-        print("Waiting for more players")
 
 def select_card():
     global cards
@@ -130,11 +109,6 @@ def select_stack():
     return i_best+1
     # return random.randint(1, 4)
 
-def finish_game():
-    global running
-    send("stop")
-    running = 0
-
 ##########################################################
 # Handlers for server events
 ##########################################################
@@ -145,8 +119,6 @@ def on_players(matchobj):
     # players are separated by spaces
     players = re.split(" ", matchobj.group(1))
     print('players: ', players)
-    # when player info has been given, we can check start
-    check_start()
 
 def on_cards(matchobj):
     global cards
@@ -187,8 +159,6 @@ def on_scores(matchobj):
             # set value for name
             scores[m[0]] = int(m[1])
     print('scores: ', scores)
-    if (len(cards)==0):
-        finish_game()
 
 def on_card(matchobj):
     m = "card\n%d" % select_card()
