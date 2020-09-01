@@ -85,10 +85,16 @@ def check_start():
 def select_card():
     global cards
     print('cards: ', cards)
-    # pretty dumb, choose highest card
-    c = cards[-1]
-    # or choose completely random card
-    c = random.choice(cards)
+    if (strategy == 0):
+        # pretty dumb, choose highest card
+        c = cards[-1]
+    elif (strategy == 1):
+        # or choose completely random card
+        c = random.choice(cards)
+    else:
+        # pretty dumb, choose lowest card
+        c = cards[0]
+    #
     # remove it after playing
     cards.remove(c)
     return c
