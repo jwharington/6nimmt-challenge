@@ -24,3 +24,53 @@ Miscellaneous
 - ranking strategies (relative value of options)
 
 Sam was here
+
+
+Game play architecture
+----------------------
+
+on_card: logic to choose a normal card to play
+- if statements / broken into functions
+
+  # avoid placing a card that immediately results in penalty
+  if a_non_full_stack_exists
+     return on_card_when_found
+  else
+     return on_card_when_dangerous
+
+- blend strategies
+  - choose card at random
+  - choose card biased to low/high end
+
+  options = []  # card choice
+  value = []  # value of playing card
+
+  (c,v) = strategy_1()  # choose highest card
+  options.append(c)
+  value.append(v)
+
+  (c,v) = strategy_2()  # choose random card
+  options.append(c)
+  value.append(v)
+
+  (c,v) = strategy_2() # choose lowest card
+  options.append(c)
+  value.append(v)
+
+  # search through options, select best one (highest value)
+
+  # value:
+  # - initially, the expected points negative penalty from playing that card
+  # - synthetic measure (how many slots are free / measure of risk)
+  # - take into account future effect
+
+  # reinforcement learning
+  # (x,a)_k -> x_k+1, r
+  # U(x,a) = value of performing a when in state x
+  #     approx int_k^inf r
+  # at each time step, choose value of a to maximise U(x,a)
+  # algorithm for updating an estimate of U(x,a) given bazillion samples
+
+on_stack: logic to choose a stack (forced by a low card play)
+-
+- 
