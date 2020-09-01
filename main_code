@@ -15,8 +15,8 @@ import sys
 import re
 import random
 
-if (len(sys.argv) < 4):
-    print(f"Usage: {sys.argv[0]} Name num_players do_start")
+if (len(sys.argv) < 5):
+    print(f"Usage: {sys.argv[0]} Name num_players do_start strategy")
     exit();
 
 ##########################################################
@@ -38,6 +38,9 @@ do_start = int(sys.argv[3])
 # always start if only player
 if (num_players == 1):
     do_start = 1
+
+# strategy switch
+strategy = int(sys.argv[4])
 
 # whether server is running, or we should exit
 running = 1
