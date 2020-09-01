@@ -43,7 +43,7 @@ on_card: logic to choose a normal card to play
   - choose card biased to low/high end
 
   options = []  # card choice
-  value = []  # value of playing card
+  value = []  # value of playing card (certain or expected value)
 
   (c,v) = strategy_1()  # choose highest card
   options.append(c)
@@ -74,3 +74,4 @@ on_card: logic to choose a normal card to play
 on_stack: logic to choose a stack (forced by a low card play)
 -
 - 
+
