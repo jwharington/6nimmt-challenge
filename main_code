@@ -100,8 +100,15 @@ def select_card():
     return c
 
 def select_stack():
-    # really dumb, choose random stack
-    return random.randint(1, 4)
+    # choose lowest stack
+    best = -1
+    i_best = -1
+    for i in range(0,4):
+        if (best == -1) or (stacks_points[i] < best):
+            best = stacks_points[i]
+            i_best = i
+    return i_best+1
+    # return random.randint(1, 4)
 
 def finish_game():
     global running
