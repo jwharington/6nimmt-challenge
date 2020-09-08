@@ -14,6 +14,7 @@ import socket
 import sys
 import re
 import random
+import numpy as np
 
 if (len(sys.argv) < 3):
     print(f"Usage: {sys.argv[0]} Name strategy")
