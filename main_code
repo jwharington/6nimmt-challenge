@@ -67,6 +67,9 @@ def find_nonfull_stacks():
     nonfull_stacks = [i for i, val in enumerate(stack_bool) if val] # Get index of non-full stacks
     return nonfull_stacks
 
+def calc_payoff(stack_value, free_slots, n_players, val_diff):
+    return 0
+
 def choose_stack_close(val_diff, pick):
     # look for safe option
     for i in range(0, len(val_diff)):
@@ -80,6 +83,8 @@ def choose_stack_close(val_diff, pick):
     # e.g. 3 players,
     #      diff 3, stack value 10
     #      diff 5, stack value 5
+
+    # payoff is negative difference (maximising payoff)
     return cards[pick[np.argmin(val_diff)]]
 
 def find_higher_card():
