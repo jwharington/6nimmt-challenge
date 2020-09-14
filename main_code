@@ -77,7 +77,7 @@ def find_higher_card():
         for sc in nonfull_stacks:
             diff = [x - stacks_topcard[sc] for x in cards] # Calculate difference between cards and non-full stack top card
             pdiff = [i for i in diff if i > 0]
-            if (length(pdiff)>0):
+            if (len(pdiff)>0):
                 m = min(pdiff) # Find minimum difference > 0
                 val.append(m) # Store minimum difference > 0
                 pick.append(diff.index(m)) # Get index of card
