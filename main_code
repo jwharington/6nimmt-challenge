@@ -68,7 +68,7 @@ def find_nonfull_stacks():
     return nonfull_stacks
 
 def calc_payoff(stack_value, free_slots, n_players, val_diff):
-    # look for safe option
+    # look for safe option (assuming we haven't card counted)
     if (val_diff == 1):
         return 10000 - free_slots
         # refinements (where multiple 1 differences exist):
