@@ -71,7 +71,7 @@ def choose_stack_close(val_diff, pick):
     # look for safe option
     for i in range(0, len(val_diff)):
         if (val_diff[i]==1):
-            return pick[i]
+            return cards[pick[i]]
 
     # choose smallest difference
     return cards[pick[np.argmin(val_diff)]]
