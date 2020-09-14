@@ -77,20 +77,21 @@ def select_card():
         stack_bool = [x < 5 for x in stacks_n] # Find non-full stacks (i.e. less than 5 cards)
         nonfull_stacks = [i for i, val in enumerate(stack_bool) if val] # Get index of non-full stacks
 
-        pick = []
-        val = []
-
-        for sc in nonfull_stacks:
-            diff = [x - stacks_topcard[sc] for x in cards] # Calculate difference between cards and non-full stack top card
-            m = min(i for i in diff if i > 0) # Find minimum difference > 0
-            val.append(m) # Store minimum difference > 0
-            pick.append(diff.index(m)) # Get index of card
-        
         if len(nonfull_stacks) != 0 and len(val) != 0:
+            pick = []
+            val = []
+
+            for sc in nonfull_stacks:
+                diff = [x - stacks_topcard[sc] for x in cards] # Calculate difference between cards and non-full stack top card
+                print(diff)
+                m = min(i for i in diff if i > 0) # Find minimum difference > 0
+                val.append(m) # Store minimum difference > 0
+                pick.append(diff.index(m)) # Get index of card
+
             c = cards[pick[np.argmin(val)]]
         else:
             c = random.choice(cards)
-     
+
     else:
         # pretty dumb, choose lowest card
         c = cards[0]
