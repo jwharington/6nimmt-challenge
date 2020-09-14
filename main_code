@@ -68,18 +68,17 @@ def find_nonfull_stacks():
     return nonfull_stacks
 
 def calc_payoff(stack_value, free_slots, n_players, val_diff):
-    # payoff is negative difference (maximising payoff)
-    return -val_diff
-
-def choose_stack_close(val_diff, val_stack, pick):
     # look for safe option
-    for i in range(0, len(val_diff)):
-        if (val_diff[i]==1):
-            return cards[pick[i]]
+    if (val_diff == 1):
+        return 10000
         # refinements (where multiple 1 differences exist):
         # -- choose selection where only one slot free and this condition
         # -- choose selection based on card (save high or low cards etc)
 
+    # payoff is negative difference (maximising payoff)
+    return -val_diff
+
+def choose_stack_close(val_diff, val_stack, pick):
     # choose smallest difference
     # e.g. 3 players,
     #      diff 3, stack value 10
