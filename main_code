@@ -72,6 +72,9 @@ def choose_stack_close(val_diff, pick):
     for i in range(0, len(val_diff)):
         if (val_diff[i]==1):
             return cards[pick[i]]
+        # refinements (where multiple 1 differences exist):
+        # -- choose selection where only one slot free and this condition
+        # -- choose selection based on card (save high or low cards etc)
 
     # choose smallest difference
     return cards[pick[np.argmin(val_diff)]]
