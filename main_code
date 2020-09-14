@@ -68,6 +68,7 @@ def find_nonfull_stacks():
     return nonfull_stacks
 
 def find_higher_card():
+    global cards
     nonfull_stacks = find_nonfull_stacks()
     if len(nonfull_stacks) != 0:
         pick = []
@@ -79,8 +80,9 @@ def find_higher_card():
             m = min(i for i in diff if i > 0) # Find minimum difference > 0
             val.append(m) # Store minimum difference > 0
             pick.append(diff.index(m)) # Get index of card
-        return val
-    return []
+        if (len(val)>0):
+            return cards[pick[np.argmin(val)]]
+    return -1
 
 def select_card():
     global cards
@@ -94,12 +96,10 @@ def select_card():
 
     elif (strategy == 2):
         # or choose card closest to one of stack top cards
-        val = find_higher_card()
-        if len(val) != 0:
-            c = cards[pick[np.argmin(val)]]
-        else:
+        c = find_higher_card()
+        # fallback if can't find
+        if c< 0:
             c = random.choice(cards)
-
     else:
         # pretty dumb, choose lowest card
         c = cards[0]
