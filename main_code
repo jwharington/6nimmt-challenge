@@ -71,25 +71,25 @@ def select_card():
     elif (strategy == 1):
         # or choose completely random card
         c = random.choice(cards)
+
     elif (strategy == 2):
-        # or choose card closest to one of stack top cards                   
-        pick = [] 
-        diff = [] 
-        # looping through stack top cards to find closest hand card 
-        for n in stacks_topcard: 
-            # Calculate difference between current stack top card and hand cards   
-            diff_stack = np.array([i-n for i in cards]) 
-            # Determine which hand cards are valid (i.e. > 0) for current stack
-            valid_idx = np.where(diff_stack > 0)[0] 
-            # Get index of valid hand card that gives lowest difference for current stack 
-            pick.append(valid_idx[diff_stack[valid_idx].argmin()])
-            # Get difference between picked card and and current stack top card
-            diff.append(cards[pick[-1]]-n) 
-        # Select hand card with minimum difference of any stack
-        c = pick[np.argmin(diff)] 
+        # or choose card closest to one of stack top cards
+        stack_bool = [x < 5 for x in stacks_n] # Find non-full stacks (i.e. less than 5 cards)
+        nonfull_stacks = [i for i, val in enumerate(stack_bool) if val] # Get index of non-full stacks
+
+        pick = []
+        val = []
+
+        for sc in nonfull_stacks:
+            diff = [x - stacks_topcard[sc] for x in cards] # Calculate difference between cards and non-full stack top card
+            m = min(i for i in diff if i > 0) # Find minimum difference > 0
+            val.append(m) # Store minimum difference > 0
+            pick.append(diff.index(m)) # Get index of card
         
-        # To do: Implement below as a mask to avoid playing card that fills a stack.
-        # stack_bool = [x < 5 for x in stacks_n] # Find non-full stacks (i.e. less than 5 cards)
+        if len(nonfull_stacks) != 0 and len(val) != 0:
+            c = cards[pick[np.argmin(val)]]
+        else:
+            c = random.choice(cards)
      
     else:
         # pretty dumb, choose lowest card
