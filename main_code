@@ -89,8 +89,9 @@ def choose_stack_close(val_diff, val_stack, pick):
     for i in range(0, len(val_diff)):
         sc = val_stack[i]
         payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i]))
+    print(payoff)
 
-    return cards[pick[np.argmin(val_diff)]]
+    return cards[pick[np.argmax(payoff)]]
 
 def find_higher_card():
     global cards
