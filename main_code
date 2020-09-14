@@ -79,8 +79,8 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff):
     k1 = -1
     k2 = 1
     k3 = 0
-    k4 = -1
-    return k1*val_diff + k2*free_slots + k3*n_players + k4*stack_value
+    k4 = 1
+    return -(k1*val_diff + k2*free_slots + k3*n_players)*stack_value**k4
 
 def choose_stack_close(val_diff, val_stack, pick):
     # choose smallest difference
