@@ -68,6 +68,7 @@ def find_nonfull_stacks():
     return nonfull_stacks
 
 def calc_payoff(stack_value, free_slots, n_players, val_diff):
+    # payoff is negative difference (maximising payoff)
     return -val_diff
 
 def choose_stack_close(val_diff, val_stack, pick):
@@ -84,12 +85,11 @@ def choose_stack_close(val_diff, val_stack, pick):
     #      diff 3, stack value 10
     #      diff 5, stack value 5
 
-    # payoff is negative difference (maximising payoff)
     payoff = []
     for i in range(0, len(val_diff)):
         sc = val_stack[i]
         payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i]))
-    print(payoff)
+    # print(payoff)
 
     return cards[pick[np.argmax(payoff)]]
 
