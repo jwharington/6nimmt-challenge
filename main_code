@@ -77,6 +77,9 @@ def choose_stack_close(val_diff, pick):
         # -- choose selection based on card (save high or low cards etc)
 
     # choose smallest difference
+    # e.g. 3 players,
+    #      diff 3, stack value 10
+    #      diff 5, stack value 5
     return cards[pick[np.argmin(val_diff)]]
 
 def find_higher_card():
