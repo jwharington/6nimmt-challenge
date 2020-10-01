@@ -34,6 +34,8 @@ class Monitor extends EventEmitter {
 		m_client.connect(9999, 'ipsm.makarta.com', () => {
 			console.log('Game engine connected');
 			this.connected = true;
+			// purge buffer on start
+			in_buffer = ''
 			// tell game engine we are a monitor
 			m_client.write('monitor\n\n');
 		});
