@@ -32,7 +32,7 @@ class Monitor extends EventEmitter {
 
 		m_client.on('data', (data) => {
 			in_buffer += data;
-			in_buffer = in_buffer.replace(/([\s\S]+?)\n\n/, on_server_message);
+			in_buffer = in_buffer.replace(/([\s\S]+?)\n\n/, this.on_server_message.bind(this));
 		});
 
 		m_client.on('close', () => {
@@ -40,29 +40,29 @@ class Monitor extends EventEmitter {
 			this.start();
 		});
 	}
-}
 
-function on_scores(match, p1) {
-	console.log('Scores: ' + p1);
-	monitor.emit('state', p1);
-	return '';
-}
+	on_scores(match, p1) {
+		console.log('Scores: ' + p1);
+		this.emit('state', p1);
+		return '';
+	}
 
-function on_players(match, p1) {
-	console.log('Players: ' + p1);
-	return '';
-}
+	on_players(match, p1) {
+		console.log('Players: ' + p1);
+		return '';
+	}
 
-function on_info(match, p1) {
-	console.log('Info: ' + p1);
-	return '';
-}
+	on_info(match, p1) {
+		console.log('Info: ' + p1);
+		return '';
+	}
 
-function on_server_message(match,p1) {
-	p1.replace(/scores\n([\s\S]*)/, on_scores);
-	p1.replace(/players\n([\s\S]*)/, on_players);
-	p1.replace(/info\n([\s\S]*)/, on_info);
-	return ''; // eat all packets
+	on_server_message(match,p1) {
+		p1.replace(/scores\n([\s\S]*)/, this.on_scores.bind(this));
+		p1.replace(/players\n([\s\S]*)/, this.on_players.bind(this));
+		p1.replace(/info\n([\s\S]*)/, this.on_info.bind(this));
+		return ''; // eat all packets
+	}
 }
 
 //////////////////////////////////////////////////////////////
