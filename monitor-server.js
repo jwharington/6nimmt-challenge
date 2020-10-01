@@ -1,5 +1,8 @@
 
-var net = require('net');
+//////////////////////////////////////////////////////////////
+// Launch web server, loading monitor.html
+// (this web client communicates with this server via socket.io)
+
 const content = require('fs').readFileSync(__dirname + '/monitor.html', 'utf8');
 
 const httpServer = require('http').createServer((req, res) => {
@@ -10,9 +13,11 @@ const httpServer = require('http').createServer((req, res) => {
 });
 
 //////////////////////////////////////////////////////////////
+// Monitor engine (receives TCP messages from game server)
 
 const EventEmitter = require('events');
 var in_buffer = ''
+var net = require('net');
 
 class Monitor extends EventEmitter {
 	constructor() {
@@ -22,27 +27,33 @@ class Monitor extends EventEmitter {
 	}
 
 	start() {
+		// launch socket connection to game engine
+
 		var m_client = new net.Socket();
 
 		m_client.connect(9999, 'ipsm.makarta.com', () => {
 			console.log('Game engine connected');
-			m_client.write('monitor\n\n');
 			this.connected = true;
+			// tell game engine we are a monitor
+			m_client.write('monitor\n\n');
 		});
 
 		m_client.on('data', (data) => {
+			// on receipt of data, feed to parser
 			in_buffer += data;
 			in_buffer = in_buffer.replace(/([\s\S]+?)\n\n/, this.on_server_message.bind(this));
 		});
 
 		m_client.on('close', () => {
 			console.log('Game engine closed');
+			// restart when closed
 			this.start();
 		});
 	}
 
 	on_scores(match, p1) {
 		console.log('Scores: ' + p1);
+		// send message to clients
 		this.emit('state', p1);
 		return '';
 	}
@@ -84,6 +95,7 @@ io.on('connect',
 		  if (!monitor.connected) {
 			  monitor.start();
 		  }
+		  // attach socket.io clients to monitor
 		  monitor.on('state', (data) => { socket.emit('state', data); } );
 	  }
 	 );
