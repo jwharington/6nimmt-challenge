@@ -12,22 +12,39 @@ const httpServer = require('http').createServer((req, res) => {
 //////////////////////////////////////////////////////////////
 
 const EventEmitter = require('events');
+var in_buffer = ''
 
 class Monitor extends EventEmitter {
 	constructor() {
         super();
+
+		this.connected = false;
 	}
 
-	emit_state(state) {
-		this.emit('state', state);
+	start() {
+		var m_client = new net.Socket();
+
+		m_client.connect(9999, 'ipsm.makarta.com', () => {
+			console.log('Game engine connected');
+			m_client.write('monitor\n\n');
+			this.connected = true;
+		});
+
+		m_client.on('data', (data) => {
+			in_buffer += data;
+			in_buffer = in_buffer.replace(/([\s\S]+?)\n\n/, on_server_message);
+		});
+
+		m_client.on('close', () => {
+			console.log('Game engine closed');
+			this.start();
+		});
 	}
 }
 
-var monitor = new Monitor();
-
 function on_scores(match, p1) {
 	console.log('Scores: ' + p1);
-	monitor.emit_state(p1);
+	monitor.emit('state', p1);
 	return '';
 }
 
@@ -50,7 +67,6 @@ function on_server_message(match,p1) {
 
 //////////////////////////////////////////////////////////////
 
-var in_buffer = ''
 
 const io = require('socket.io')(httpServer);
 const port = 3000
@@ -59,29 +75,16 @@ httpServer.listen(port, () => {
 	console.log('go to http://localhost:' + port);
 });
 
-io.on('connect', socket => {
-	console.log('Server connected');
+var monitor = new Monitor();
 
-	var m_client = new net.Socket();
 
-	m_client.connect(9999, 'ipsm.makarta.com', function() {
-		console.log('Game engine connected');
-		m_client.write('monitor\n\n');
-
-		monitor.on('state', (data) => { m_client.emit('state', data); } );
-	});
-
-	m_client.on('data', function(data) {
-		in_buffer += data;
-		in_buffer = in_buffer.replace(/([\s\S]+?)\n\n/, on_server_message);
-
-		// m_client.destroy(); // kill client after server's response
-	});
-
-	m_client.on('close', function() {
-		console.log('Game engine closed');
-	});
-
-}
+io.on('connect',
+	  socket => {
+		  console.log('Server connected');
+		  if (!monitor.connected) {
+			  monitor.start();
+		  }
+		  monitor.on('state', (data) => { socket.emit('state', data); } );
+	  }
 	 );
 
