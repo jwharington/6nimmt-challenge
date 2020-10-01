@@ -82,7 +82,7 @@ class Monitor extends EventEmitter {
 
 
 const io = require('socket.io')(httpServer);
-const port = 3000
+const port = 3000;
 
 httpServer.listen(port, () => {
 	console.log('go to http://localhost:' + port);
