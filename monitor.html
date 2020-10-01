@@ -5,10 +5,12 @@
     <title>6nimmt monitor</title>
 </head>
 <body>
-    <ul id="events"></ul>
+  <ul id="events"></ul>
+  <p id="score"></p>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const $events = document.getElementById('events');
+        const $score_text = document.getElementById('score');
 
         const newItem = (content) => {
           const item = document.createElement('li');
@@ -23,7 +25,7 @@
         });
 
         socket.on('state', (vals) => {
-		  $events.appendChild(newItem(`state - ${vals}`));
+          $score_text.innerText = vals;
 	    });
 
     </script>
