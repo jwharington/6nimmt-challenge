@@ -166,12 +166,14 @@ def on_players(matchobj):
     print('players: ', players)
 
 def on_cards(matchobj):
-    global cards
+    global cards, deck
     # line format: "card0 card1 .. cardn"
     cards_strings = re.split(" ", matchobj.group(1))
     # convert into integers
     cards = []
     cards = list(map(int, cards_strings))
+    # remove cards from deck
+    [deck.remove(c) for c in cards if c in deck]
     print('cards: ', cards)
 
 def on_stacks(matchobj):
