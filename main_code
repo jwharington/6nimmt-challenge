@@ -223,7 +223,7 @@ def on_stacks(matchobj):
     print('stacks points: ', stacks_points)
 
 def on_scores(matchobj):
-    global scores
+    global scores, running
     # loads players into array and checks start condition
     #
     # players are separated by spaces, "name1 value1 name2 value2 ... "
@@ -233,7 +233,11 @@ def on_scores(matchobj):
         m = re.split(' ', sc)
         if (len(m)==2):
             # set value for name
-            scores[m[0]] = int(m[1])
+            this_score = int(m[1])
+            scores[m[0]] = this_score
+            # finish when no cards left and someone has finished
+            if ((len(cards)<1) and (this_score<=0)):
+                running = 0
     print('scores: ', scores)
 
 def on_card(matchobj):
@@ -316,6 +320,7 @@ try:
         # if no match, buffer is returned unaffected
         # if one or more match, this eats up the match returning what's left over
         buffer = re.sub('.+?\n\n', on_server_message, buffer, flags=re.DOTALL)
+    print('finished game')
 
 finally:
     print('Closing socket')
