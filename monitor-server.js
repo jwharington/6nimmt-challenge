@@ -43,7 +43,7 @@ class Monitor extends EventEmitter {
 		m_client.on('data', (data) => {
 			// on receipt of data, feed to parser
 			in_buffer += data;
-			in_buffer = in_buffer.replace(/([\s\S]+?)\n\n/, this.on_server_message.bind(this));
+			in_buffer = in_buffer.replace(/([\s\S]+?)\n\n/g, this.on_server_message.bind(this));
 		});
 
 		m_client.on('close', () => {
