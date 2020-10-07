@@ -161,8 +161,10 @@ def select_card():
     elif (strategy == 2):
         # or choose card closest to one of stack top cards
         c = find_higher_card()
-        # fallback if can't find
+        # fallback if can't find a higher card
         if c< 0:
+            # TODO: consider whether we want to play lowest to pick up a low value stack, or
+            # play higher to increase chance someone else has to take the hit
             c = random.choice(cards)
     else:
         # pretty dumb, choose lowest card
