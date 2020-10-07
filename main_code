@@ -47,8 +47,10 @@ stacks_topcard = []
 stacks_n = []
 # total points in each row
 stacks_points = []
+
 # cards in the deck (used for counting)
 deck = list(range(1,105))
+# (note not all cards may be dealt out, depending on number of players)
 
 ##########################################################
 # Utility functions
