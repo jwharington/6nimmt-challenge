@@ -80,6 +80,28 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff):
         # -- choose selection where only one slot free and this condition
         # -- choose selection based on card (save high or low cards etc)
 
+    # top card: 50
+    # our lowest card: 55
+    # 3 slots free
+    # four players
+    # expected payoff:
+    # - assuming random opponents
+    #   - P(card played below us but above top)
+    #   - probability that we will be pushed out
+    #   - = probability there are three cards free in range [51-54]
+    #   - random opponent:
+    #      - n = number of cards free in range (hasn't been played that we dont have)
+    #      - m = number of free cards
+    #      P one card is played = n / m  = P1
+    #      P second card = n-1 / m-1     = P2
+    #      P j                           = Pj
+    #      P three cards played (bad) = P1*P3*P3
+    # - assuming ideal opponent (deliberately trying to undercut)
+    #   - probability that cards free in range are held by (free slots number) of players
+    #   - full factorial lookahead
+    #     - 10: 4^10 = around 1000000
+    #     - iterate through, accumulate number of wins / total number
+
     # payoff is negative difference (maximising payoff)
     k1 = -1
     k2 = 1
