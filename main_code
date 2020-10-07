@@ -102,6 +102,9 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff):
     #     - 10: 4^10 = around 1000000
     #     - iterate through, accumulate number of wins / total number
     #     - could factor in a play probability (trade off between random and ideal evil)
+    #     - need to limit this to small ranges otherwise too intensive
+    #     - eventually closed form
+    #     - quick exit heuristics?
 
     # payoff is negative difference (maximising payoff)
     k1 = -1
