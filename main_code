@@ -126,6 +126,7 @@ def choose_stack_close(val_diff, val_stack, pick):
         payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i], pick[i]))
     # print(payoff)
 
+    # pick selection with best payoff
     return cards[pick[np.argmax(payoff)]]
 
 def find_higher_card():
@@ -165,6 +166,7 @@ def select_card():
         if c< 0:
             # TODO: consider whether we want to play lowest to pick up a low value stack, or
             # play higher to increase chance someone else has to take the hit
+            # TODO: move this into find_higher_card so we can include this in our list of actions for consideration
             c = random.choice(cards)
     else:
         # pretty dumb, choose lowest card
