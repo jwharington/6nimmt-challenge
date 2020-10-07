@@ -222,7 +222,7 @@ def on_played(matchobj):
     # split up players
     played_cards = re.split("\n", matchobj.group(1))
     for played in played_cards:
-        # seperate name from played card
+        # separate name from played card
         m = re.split(" ", played)
         # remove from deck if played
         if int(m[1]) in deck:
