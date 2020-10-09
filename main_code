@@ -16,6 +16,7 @@ import sys
 import re
 import random
 import numpy as np
+import functools
 
 if (len(sys.argv) < 3):
     print(f"Usage: {sys.argv[0]} Name strategy")
@@ -72,8 +73,8 @@ def find_nonfull_stacks():
     nonfull_stacks = [i for i, val in enumerate(stack_bool) if val] # Get index of non-full stacks
     return nonfull_stacks
 
-def calc_payoff(stack_value, free_slots, n_players, val_diff, pick):
-    global cards, deck
+def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
+    global cards, deck, stacks_topcard
     # look for safe option (assuming we haven't card counted)
     if (val_diff == 1):
         return 10000 - free_slots
@@ -97,6 +98,21 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick):
     #      P second card = n-1 / m-1     = P2
     #      P j                           = Pj
     #      P three cards played (bad) = P1*P3*P3
+    
+    # Determine cards that fall inbetween stack topcard and closest hand card
+    playable = list(filter(lambda x: x > stacks_topcard[stack_idx] and x < cards[pick], deck))
+    
+    # calculate probabilities of cards played fall in gap only if enough playable cards to push us out
+    if len(playable) > n_players:
+        p = []
+        tmp = -1
+        for nplyrs in range(0, n_players):
+            tmp += 1
+            p.append((len(playable)-tmp)/(len(deck)-tmp))
+
+        # calculate proability that we are pushed out = P1*P2...*Pj, where j - num of players
+        ptot = functools.reduce(lambda a,b: a*b, p)
+    
     # - assuming ideal opponent (deliberately trying to undercut)
     #   - probability that cards free in range are held by (free slots number) of players
     #   - full factorial lookahead
@@ -123,7 +139,7 @@ def choose_stack_close(val_diff, val_stack, pick):
     payoff = []
     for i in range(0, len(val_diff)):
         sc = val_stack[i]
-        payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i], pick[i]))
+        payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i], pick[i], sc))
     # print(payoff)
 
     # pick selection with best payoff
