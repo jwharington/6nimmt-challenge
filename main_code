@@ -102,15 +102,16 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     # Determine cards that fall inbetween stack topcard and closest hand card
     playable = list(filter(lambda x: x > stacks_topcard[stack_idx] and x < cards[pick], deck))
     
-    # calculate probabilities of cards played fall in gap
-    p = []
-    tmp = -1
-    for nplyrs in range(0, n_players):
-        tmp += 1
-        p.append((len(playable)-tmp)/(len(deck)-tmp))
+    # calculate probabilities of cards played fall in gap only if enough playable cards to push us out
+    if len(playable) > n_players:
+        p = []
+        tmp = -1
+        for nplyrs in range(0, n_players):
+            tmp += 1
+            p.append((len(playable)-tmp)/(len(deck)-tmp))
 
-    # calculate proability that we are pushed out = P1*P2...*Pj, where j - num of players
-    ptot = functools.reduce(lambda a,b: a*b, p)
+        # calculate proability that we are pushed out = P1*P2...*Pj, where j - num of players
+        ptot = functools.reduce(lambda a,b: a*b, p)
     
     # - assuming ideal opponent (deliberately trying to undercut)
     #   - probability that cards free in range are held by (free slots number) of players
