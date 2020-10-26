@@ -103,12 +103,10 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     playable = list(filter(lambda x: x > stacks_topcard[stack_idx] and x < cards[pick], deck))
     
     # calculate probabilities of cards played fall in gap only if enough playable cards to push us out
-    if len(playable) > n_players:
+    if len(playable) > n_players and n_players > free_slots:
         p = []
-        tmp = -1
-        for nplyrs in range(0, n_players):
-            tmp += 1
-            p.append((len(playable)-tmp)/(len(deck)-tmp))
+        for x in range(0, n_players):
+            p.append((len(playable)-x)/(len(deck)-x))
 
         # calculate proability that we are pushed out = P1*P2...*Pj, where j - num of players
         ptot = functools.reduce(lambda a,b: a*b, p)
