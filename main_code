@@ -91,7 +91,7 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     # 3 slots free
     # four players
     # expected payoff:
-    # - assuming random opponents
+    # - assuming random opponents  <------
     #   - P(card played below us but above top)
     #   - probability that we will be pushed out
     #   - = probability there are three cards free in range [51-54]
@@ -101,7 +101,7 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     #      P one card is played = n / m  = P1
     #      P second card = n-1 / m-1     = P2
     #      P j                           = Pj
-    #      P three cards played (bad) = P1*P3*P3
+    #      P three cards played (bad) = P1*P3*P3  <-----
 
     # Determine cards that fall inbetween stack topcard and closest hand card
     playable = list(filter(lambda x: x > stacks_topcard[stack_idx] and x < cards[pick], deck))
@@ -114,7 +114,7 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
             tmp += 1
             p.append((len(playable)-tmp)/(len(deck)-tmp))
 
-        # calculate proability that we are pushed out = P1*P2...*Pj, where j - num of players
+        # calculate probability that we are pushed out = P1*P2...*Pj, where j - num of players
         ptot = functools.reduce(lambda a,b: a*b, p)
 
     # - assuming ideal opponent (deliberately trying to undercut)
@@ -177,6 +177,15 @@ def choose_highest_payoff_card():
 
     # add options to pick, payoff from deliberately losing a stack
     # ..
+       # find list of cards BELOW each stack (dumb selection is to choose your lowest card for each stack)
+       #        10  ... 1 high prob, 3 medium
+       #        23  ... 15, 20
+       #        40  ... 30
+       #        80  ... 70
+       #     1,3,15,20,30,70
+
+       # evaluate the payoff, stack value and probability that others undercut you
+       # add to list of options (pick, payoff pairs)
 
     # add options to pick, payoff from randomly chosing a card (to act as a fallback, mainly)
     # ..
