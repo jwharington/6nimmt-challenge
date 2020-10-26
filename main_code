@@ -76,6 +76,10 @@ def find_nonfull_stacks():
 def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     global cards, deck, stacks_topcard
     # look for safe option (assuming we haven't card counted)
+
+    # initialise probability this eventuality will occur
+    ptot = 1
+
     if (val_diff == 1):
         return 10000 - free_slots
         # refinements (where multiple 1 differences exist):
@@ -98,10 +102,10 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     #      P second card = n-1 / m-1     = P2
     #      P j                           = Pj
     #      P three cards played (bad) = P1*P3*P3
-    
+
     # Determine cards that fall inbetween stack topcard and closest hand card
     playable = list(filter(lambda x: x > stacks_topcard[stack_idx] and x < cards[pick], deck))
-    
+
     # calculate probabilities of cards played fall in gap only if enough playable cards to push us out
     if len(playable) > n_players:
         p = []
@@ -112,7 +116,7 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
 
         # calculate proability that we are pushed out = P1*P2...*Pj, where j - num of players
         ptot = functools.reduce(lambda a,b: a*b, p)
-    
+
     # - assuming ideal opponent (deliberately trying to undercut)
     #   - probability that cards free in range are held by (free slots number) of players
     #   - full factorial lookahead
@@ -123,12 +127,24 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     #     - eventually closed form
     #     - quick exit heuristics?
 
+    # 1- pay 10, prob 10% success -> e pay = 10*0.1 = 1
+    # 2- pay 2, prob 90% success -> e pay = 2*0.9 = 1.8 <--- ok
+
+    # 1- pay -10 -> e pay -1   <---- ok
+    # 2- pay -2 -> e pay -1.8
+
     # payoff is negative difference (maximising payoff)
     k1 = -1
     k2 = 1
     k3 = 0
     k4 = 1
-    return -(k1*val_diff + k2*free_slots + k3*n_players)*stack_value**k4
+    expected_payoff = (-(k1*val_diff + k2*free_slots + k3*n_players)*stack_value**k4)
+    if (strategy == 2):
+        # vanilla, does not take probs into account
+        return expected_payoff
+    else:
+        # take expected probability of occurance into account
+        return expected_payoff*(1-ptot)
 
 def choose_stack_close(val_diff, val_stack, pick):
     # choose smallest difference
@@ -142,7 +158,7 @@ def choose_stack_close(val_diff, val_stack, pick):
         payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i], pick[i], sc))
     # print(payoff)
 
-    # pick selection with best payoff
+    # pick selection with best (expected) payoff
     return cards[pick[np.argmax(payoff)]]
 
 def find_higher_card():
@@ -174,8 +190,10 @@ def select_card():
     elif (strategy == 1):
         # or choose completely random card
         c = random.choice(cards)
-
     elif (strategy == 2):
+        # pretty dumb, choose lowest card
+        c = cards[0]
+    else:
         # or choose card closest to one of stack top cards
         c = find_higher_card()
         # fallback if can't find a higher card
@@ -184,9 +202,6 @@ def select_card():
             # play higher to increase chance someone else has to take the hit
             # TODO: move this into find_higher_card so we can include this in our list of actions for consideration
             c = random.choice(cards)
-    else:
-        # pretty dumb, choose lowest card
-        c = cards[0]
     #
     # remove it after playing
     cards.remove(c)
