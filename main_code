@@ -139,7 +139,8 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     k3 = 0
     k4 = 1
     expected_payoff = (-(k1*val_diff + k2*free_slots + k3*n_players)*stack_value**k4)
-    if (strategy == 2):
+    print('payoff: ', expected_payoff, ' prob: ', 1-ptot, ' expected_payoff: ', (1-ptot)*expected_payoff)
+    if (strategy == 3):
         # vanilla, does not take probs into account
         return expected_payoff
     else:
