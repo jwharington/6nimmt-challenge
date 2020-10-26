@@ -146,29 +146,19 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
         # take expected probability of occurance into account
         return expected_payoff*(1-ptot)
 
-def choose_stack_close(val_diff, val_stack, pick):
-    # choose smallest difference
-    # e.g. 3 players,
-    #      diff 3, stack value 10
-    #      diff 5, stack value 5
+def choose_highest_payoff_card():
+    global cards
 
     payoff = []
-    for i in range(0, len(val_diff)):
-        sc = val_stack[i]
-        payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i], pick[i], sc))
-    # print(payoff)
+    pick = []
 
-    # pick selection with best (expected) payoff
-    return cards[pick[np.argmax(payoff)]]
-
-def find_higher_card():
-    global cards
+    # add options to pick, payoff from finding higher card
     nonfull_stacks = find_nonfull_stacks()
     if len(nonfull_stacks) != 0:
-        pick = []
         val_diff = []
         val_stack = []
 
+        # build a list of non-taking stack plays
         for sc in nonfull_stacks:
             diff = [x - stacks_topcard[sc] for x in cards] # Calculate difference between cards and non-full stack top card
             pdiff = [i for i in diff if i > 0]
@@ -177,8 +167,27 @@ def find_higher_card():
                 val_diff.append(m) # Store minimum difference > 0
                 pick.append(diff.index(m)) # Get index of card
                 val_stack.append(sc)
+
         if (len(val_diff)>0):
-            return choose_stack_close(val_diff, val_stack, pick)
+            for i in range(0, len(val_diff)):
+                sc = val_stack[i]
+                payoff.append(calc_payoff(stacks_points[sc], 5-stacks_n[sc], len(players), val_diff[i], pick[i], sc))
+                # print(payoff)
+                # pick selection with best (expected) payoff
+
+    # add options to pick, payoff from deliberately losing a stack
+    # ..
+
+    # add options to pick, payoff from randomly chosing a card (to act as a fallback, mainly)
+    # ..
+    c_random = random.randrange(len(cards))
+    pick.append(c_random)
+    # use big bad for now
+    payoff.append(-10000)
+
+    # finally select card from highest payoff
+    if (len(payoff)>0):
+        return cards[pick[np.argmax(payoff)]]
     return -1
 
 def select_card():
@@ -194,15 +203,10 @@ def select_card():
         # pretty dumb, choose lowest card
         c = cards[0]
     else:
-        # or choose card closest to one of stack top cards
-        c = find_higher_card()
-        # fallback if can't find a higher card
+        c = choose_highest_payoff_card()
         if c< 0:
-            # TODO: consider whether we want to play lowest to pick up a low value stack, or
-            # play higher to increase chance someone else has to take the hit
-            # TODO: move this into find_higher_card so we can include this in our list of actions for consideration
-            c = random.choice(cards)
-    #
+            # kark it, should never get here!
+            print('error! yoikes')
     # remove it after playing
     cards.remove(c)
     return c
