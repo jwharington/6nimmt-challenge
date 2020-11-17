@@ -17,6 +17,7 @@ import re
 import random
 import numpy as np
 import functools
+from itertools import permutations, combinations
 
 if (len(sys.argv) < 3):
     print(f"Usage: {sys.argv[0]} Name strategy")
@@ -103,6 +104,25 @@ def calc_payoff(stack_value, free_slots, n_players, val_diff, pick, stack_idx):
     #      P j                           = Pj
     #      P three cards played (bad) = P1*P3*P3  <-----
 
+    # Need to calculate probability to account for players having more than one of the playable cards.
+    # Example:
+    # No. of cards = 104
+    # No. of players = 4
+    # What is the probability that each player gets one of the top 4 cards?
+    #
+    # A = no. of ways to distribute top 4 cards so each players gets 1
+    # B = no. of combinations to distribute remaining 100 cards
+    # C = no. of combinations to distribute 104 cards to 4 players
+    # P = A*B/C
+    #
+    # A = 4!
+    # B = 100.C.25 x 75.C.25 x 50.C.25 x 25.C.25
+    # C = 104.C.26 x 78.C.26 x 52.C.26 x 26.C.26
+    #
+    # The part Im still working on is calculating the number of different ways to distribute n cards to
+    # m players where the cards dont have to be evenly distributed (i.e. one player can be dealt all
+    # cards.)
+    
     # Determine cards that fall inbetween stack topcard and closest hand card
     playable = list(filter(lambda x: x > stacks_topcard[stack_idx] and x < cards[pick], deck))
 
